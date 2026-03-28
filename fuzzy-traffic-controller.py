@@ -85,12 +85,11 @@ class FuzzyTrafficController:
     def defuzzify(self, rules):
         if not rules: return 20
         num = den = 0
-        for x in np.arange(0, 60, 0.5):
-            # Mamdani aggregation: clip each consequent by rule strength,
-            # then take the maximum across fired rules at this x.
-            agg_m = max(min(r['strength'], self.green_mf[r['output']](x)) for r in rules)
-            num += x * agg_m
-            den += agg_m
+        for r in rules:
+            for x in np.arange(0, 60, 0.5):
+                m = min(r['strength'], self.green_mf[r['output']](x))
+                num += x*m
+                den += m
         return num/den if den else 20
 
     def calculate_green_time(self, d, w):

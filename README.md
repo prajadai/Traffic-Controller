@@ -172,7 +172,7 @@ AI-Project/
 ## Troubleshooting
 
 - Error: "streamlit is not recognized"
-  - Use python -m streamlit run .\no-main.py
+  - Use python -m streamlit run .\fuzzy-traffic-controller.py
   - Or ensure the virtual environment is activated before running
 
 - Session state issues
@@ -182,9 +182,3 @@ AI-Project/
 - Missing package import errors
   - Install dependencies in the active environment
   - Verify interpreter selection in VS Code
-
-## Suggested Next Improvements
-
-- Add unit tests for membership and defuzzification functions
-- Add data logging of scenarios and outputs for analysis
-- Add sensitivity analysis for rule changes
