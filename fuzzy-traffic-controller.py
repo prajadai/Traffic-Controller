@@ -30,14 +30,14 @@ plt.rcParams.update({
 class FuzzyTrafficController:
     def __init__(self):
         self.density_mf = {
-            'Low': self._trapezoidal(0, 0, 10, 20),
-            'Medium': self._triangular(15, 25, 35),
-            'High': self._trapezoidal(30, 40, 60, 60),
+            'Low': self._trapezoidal(0, 0, 20, 35),
+            'Medium': self._triangular(25, 40, 55),
+            'High': self._trapezoidal(45, 55, 60, 60),
         }
         self.waiting_mf = {
-            'Short': self._trapezoidal(0, 0, 15, 30),
-            'Medium': self._triangular(20, 35, 50),
-            'Long': self._trapezoidal(40, 55, 90, 90),
+            'Short': self._trapezoidal(0, 0, 20, 40),
+            'Medium': self._triangular(25, 45, 65),
+            'Long': self._trapezoidal(50, 70, 90, 90),
         }
         self.green_mf = {
             'Short': self._triangular(5, 10, 15),
@@ -85,11 +85,12 @@ class FuzzyTrafficController:
     def defuzzify(self, rules):
         if not rules: return 20
         num = den = 0
-        for r in rules:
-            for x in np.arange(0, 60, 0.5):
-                m = min(r['strength'], self.green_mf[r['output']](x))
-                num += x*m
-                den += m
+        for x in np.arange(0, 60, 0.5):
+            # Mamdani aggregation: clip each consequent by rule strength,
+            # then take the maximum across fired rules at this x.
+            agg_m = max(min(r['strength'], self.green_mf[r['output']](x)) for r in rules)
+            num += x * agg_m
+            den += agg_m
         return num/den if den else 20
 
     def calculate_green_time(self, d, w):

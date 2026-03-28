@@ -17,7 +17,7 @@ The app focuses on explainability, not just prediction. It shows membership func
 
 ## Main Files
 
-- no-main.py
+- fuzzy-traffic-controller.py
   - Current primary Streamlit app (matplotlib-based visualizations)
   - Includes tabs for rules, live control, membership functions, rule activation, and scenarios
 
@@ -81,7 +81,7 @@ COG = (integral x * mu(x) dx) / (integral mu(x) dx)
 
 In code, this is approximated numerically over the output range using a small step.
 
-## App Tabs (no-main.py)
+## App Tabs (fuzzy-traffic-controller.py)
 
 1. Fuzzy Rules
    - Conceptual explanation and complete rule base
@@ -143,13 +143,13 @@ This installs all dependencies used by the project.
 ### 3) Run the main app
 
 ```powershell
-streamlit run .\no-main.py
+streamlit run .\fuzzy-traffic-controller.py
 ```
 
 If streamlit is not on PATH, run:
 
 ```powershell
-python -m streamlit run .\no-main.py
+python -m streamlit run .\fuzzy-traffic-controller.py
 ```
 
 ### 4) Open in browser
