@@ -18,8 +18,8 @@ The app focuses on explainability, not just prediction. It shows membership func
 ## Main Files
 
 - fuzzy-traffic-controller.py
-  - Current primary Streamlit app (matplotlib-based visualizations)
-  - Includes tabs for rules, live control, membership functions, rule activation, and scenarios
+  - Primary Streamlit app (matplotlib-based visualizations)
+  - Includes tabs for rule design, live control, membership graphs, rule activation, defuzzification walkthrough, and scenarios
 
 - requirements.txt
   - Python dependency list used to set up the project environment
@@ -89,14 +89,13 @@ In code, this is approximated numerically over the output range using a small st
 2. Live Controller
    - Interactive sliders for density and waiting
    - Real-time fuzzy memberships and computed green time
-   - Defuzzification formula and output plot
+   - Membership function graphs and output visualization
 
-3. Membership Functions
-   - Input/output membership curves
-   - Current input marker and degree visualization
-
-4. Rule Activation
+3. Rule Activation
    - Fired rules and their activation strengths
+
+4. Defuzzification
+   - Step-by-step clipping, aggregation, and COG breakdown
 
 5. Scenarios
    - Preset traffic situations (rush hour, late night, etc.)
@@ -165,8 +164,7 @@ AI-Project/
 ├── fuzzy-traffic-controller.py
 ├── README.md
 ├── requirements.txt
-├── .gitignore
-└── __pycache__/
+└── .gitignore
 ```
 
 ## Troubleshooting

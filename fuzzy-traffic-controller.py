@@ -471,6 +471,7 @@ with tab4:
         _ax_mu.set_xlim(0, 60); _ax_mu.set_ylim(0, 1.15); _ax_mu.tick_params(labelsize=9)
 
         _y_weighted = _x_cog * _y_cog
+        _y_weighted_max = float(np.max(_y_weighted))
         _ax_xmu.fill_between(_x_cog, _y_weighted, alpha=0.35, color='#0984e3')
         _ax_xmu.plot(_x_cog, _y_weighted, color='#0984e3', linewidth=2)
         _ax_xmu.text(0.03, 0.95, f'Weighted area sum = {_numerator:.3f}',
@@ -480,7 +481,9 @@ with tab4:
                        edgecolor='#0984e3', alpha=0.85))
         _ax_xmu.set_title('x · μ_agg(x)  —  weighted area', fontsize=11, fontweight='bold')
         _ax_xmu.set_xlabel('x (seconds)'); _ax_xmu.set_ylabel('x · μ(x)')
-        _ax_xmu.set_xlim(0, 60); _ax_xmu.tick_params(labelsize=9)
+        _ax_xmu.set_xlim(0, 60)
+        _ax_xmu.set_ylim(0, _y_weighted_max * 1.05 if _y_weighted_max > 0 else 1)
+        _ax_xmu.tick_params(labelsize=9)
 
         _fig_cog.suptitle('Numerator vs Denominator integrals',
                            fontsize=10, style='italic')
