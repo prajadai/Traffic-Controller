@@ -198,9 +198,10 @@ st.title('🚦 Fuzzy Logic Traffic Light Controller')
 st.caption('Mamdani fuzzy inference system for adaptive traffic signal control.')
 controller = FuzzyTrafficController()
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     '📖 Fuzzy Rules', '🚦 Live Controller',
-    '🔍 Rule Activation', '⚙️ Defuzzification', '🎮 Scenarios',
+    '🔍 Rule Activation', '⚙️ Defuzzification',
+    '🎮 Scenarios', '📊 Evaluation Metrics',
 ])
 
 # TAB 1
@@ -547,3 +548,119 @@ with tab5:
     gt_now, _, _, _ = controller.calculate_green_time(d_now, w_now)
     c1, c2, c3 = st.columns(3)
     c1.metric('Traffic Density', f'{d_now:.1f} veh/min'); c2.metric('Waiting Time', f'{w_now:.1f} s'); c3.metric('Green Time', f'{gt_now:.1f} s')
+
+# TAB 6
+with tab6:
+    st.header('📊 Evaluation Metrics')
+    st.caption('Quantitative assessment of fuzzy controller performance')
+
+    densities = np.linspace(0, 60, 60)
+    waitings = np.linspace(0, 90, 60)
+    Z = np.zeros((len(densities), len(waitings)))
+
+    for i, d in enumerate(densities):
+        for j, w in enumerate(waitings):
+            gt, _, _, _ = controller.calculate_green_time(d, w)
+            Z[i, j] = gt
+
+    X, Y = np.meshgrid(densities, waitings)
+
+    # Smoothness Calculation
+    grad_x = np.gradient(Z, axis=0)
+    grad_y = np.gradient(Z, axis=1)
+    smoothness = 1 / (np.std(grad_x) + np.std(grad_y) + 1e-6)
+
+    # 3D Surface Plot
+    st.subheader('3D Response Surface')
+
+    fig_surface = plt.figure(figsize=(10, 7))
+    ax = fig_surface.add_subplot(111, projection='3d')
+
+    surf = ax.plot_surface(
+        X, Y, Z.T,
+        cmap='viridis',
+        edgecolor='none',
+        antialiased=True
+    )
+
+    # Labels
+    ax.set_xlabel('Density (veh/min)', labelpad=15)
+    ax.set_ylabel('Waiting Time (s)', labelpad=15)
+    ax.set_zlabel('Green Time (s)', labelpad=15)
+    ax.set_title('Fuzzy Controller Response Surface', pad=20)
+
+    # Limits
+    ax.set_zlim(0, 60)
+
+    # Better angle
+    ax.view_init(elev=28, azim=130)
+
+    # Fix layout spacing
+    fig_surface.subplots_adjust(left=0.05, right=0.85, top=0.9, bottom=0.1)
+
+    # Clean colorbar (separate space → no overlap)
+    cbar = fig_surface.colorbar(surf, ax=ax, shrink=0.6, pad=0.1)
+    cbar.set_label('Green Time (s)')
+
+    st.pyplot(fig_surface)
+
+    # Contour Plot
+    st.subheader('Contour Map (Top View)')
+
+    fig_contour, ax2 = plt.subplots(figsize=(10, 5))
+
+    contour = ax2.contourf(
+        X, Y, Z.T,
+        levels=25,
+        cmap='viridis'
+    )
+
+    ax2.set_xlabel('Density (veh/min)')
+    ax2.set_ylabel('Waiting Time (s)')
+    ax2.set_title('Green Time Variation')
+
+    # Clean colorbar
+    cbar2 = fig_contour.colorbar(contour, pad=0.02)
+    cbar2.set_label('Green Time (s)')
+
+    fig_contour.tight_layout()
+
+    st.pyplot(fig_contour)
+
+    # Metrics Section
+    st.divider()
+    st.subheader('📈 Performance Indicators')
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    # Output range
+    min_gt = np.min(Z)
+    max_gt = np.max(Z)
+
+    # Stability (variation)
+    stability = np.std(Z)
+
+    # Sensitivity
+    sensitivity = np.mean(np.abs(grad_x)) + np.mean(np.abs(grad_y))
+
+    col1.metric('Smoothness Score', f'{smoothness:.3f}',
+                help='Higher = smoother transitions')
+
+    col2.metric('Output Range', f'{min_gt:.1f}–{max_gt:.1f} s',
+                help='Ensures valid signal timing')
+
+    col3.metric('Stability (σ)', f'{stability:.2f}',
+                help='Lower = more stable output')
+
+    col4.metric('Sensitivity', f'{sensitivity:.2f}',
+                help='Responsiveness to input changes')
+
+    st.divider()
+    st.subheader('🧠 Interpretation')
+
+    st.info(
+        "• The smooth surface confirms gradual transitions (no abrupt signal jumps).\n"
+        "• Contour lines show how green time increases with density and waiting.\n"
+        "• Higher regions (yellow) correspond to heavy traffic conditions.\n"
+        "• Overall, the controller behaves consistently and realistically."
+    )

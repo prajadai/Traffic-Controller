@@ -1,130 +1,79 @@
 # Fuzzy Logic Traffic Light Controller
 
-A Streamlit-based data science mini project that uses a Mamdani fuzzy inference system to compute adaptive green-light durations from real-time traffic conditions.
+An interactive Streamlit app that implements a Mamdani fuzzy inference system to compute adaptive green-light duration from traffic conditions.
 
-## Project Overview
+## What This Project Does
 
-This project models an intelligent traffic signal controller using two inputs:
+The controller takes two inputs:
 
-- Traffic density (vehicles per minute)
+- Traffic density (vehicles/minute)
 - Waiting time (seconds)
 
-The controller outputs:
+It outputs one control value:
 
-- Green light duration (seconds)
+- Recommended green-light duration (seconds)
 
-The app focuses on explainability, not just prediction. It shows membership functions, active rules, rule firing strengths, and defuzzification output so you can understand the decision process end-to-end.
+The app is explainable by design: it visualizes membership functions, fired rules, clipping/aggregation, centroid defuzzification, scenario behavior, and response-surface metrics.
 
-## Main Files
+## Current App Features
 
-- fuzzy-traffic-controller.py
-  - Primary Streamlit app (matplotlib-based visualizations)
-  - Includes tabs for rule design, live control, membership graphs, rule activation, defuzzification walkthrough, and scenarios
-
-- requirements.txt
-  - Python dependency list used to set up the project environment
-
-- .gitignore
-  - Ignore rules for virtual environments, caches, local secrets, and generated artifacts
-
-## Core Working Logic
-
-The fuzzy controller is implemented in the FuzzyTrafficController class.
-
-### 1) Membership Function Definitions
-
-Three linguistic variables are defined:
-
-1. Traffic Density (0 to 60)
-   - Low (trapezoidal)
-   - Medium (triangular)
-   - High (trapezoidal)
-
-2. Waiting Time (0 to 90)
-   - Short (trapezoidal)
-   - Medium (triangular)
-   - Long (trapezoidal)
-
-3. Green Duration (0 to 60)
-   - Short (triangular)
-   - Medium (triangular)
-   - Long (triangular)
-   - Very Long (trapezoidal)
-
-Triangular and trapezoidal functions are used because they are simple, interpretable, and common in Mamdani systems.
-
-### 2) Fuzzification
-
-Crisp input values are converted to membership degrees in [0, 1].
-
-Example idea:
-- A density value can be partly Medium and partly High at the same time.
-
-### 3) Rule Evaluation
-
-There are 9 IF-THEN rules combining density and waiting categories.
-Rule firing strength is computed with:
-
-- AND operator = min(mu_density, mu_waiting)
-
-Only rules with firing strength greater than 0 contribute to the output.
-
-### 4) Aggregation + Defuzzification
-
-For each fired rule:
-
-- The output membership function is clipped at rule strength.
-- All clipped outputs are aggregated.
-- Final green time is computed by center of gravity (COG):
-
-COG = (integral x * mu(x) dx) / (integral mu(x) dx)
-
-In code, this is approximated numerically over the output range using a small step.
-
-## App Tabs (fuzzy-traffic-controller.py)
+The Streamlit app in `fuzzy-traffic-controller.py` currently has 6 tabs:
 
 1. Fuzzy Rules
-   - Conceptual explanation and complete rule base
-
 2. Live Controller
-   - Interactive sliders for density and waiting
-   - Real-time fuzzy memberships and computed green time
-   - Membership function graphs and output visualization
-
 3. Rule Activation
-   - Fired rules and their activation strengths
+4. Defuzzification Walkthrough
+5. Preset Scenarios
+6. Evaluation Metrics
+
+### Inference Pipeline Implemented
+
+1. Fuzzification
+   - Converts crisp density/waiting inputs to membership degrees.
+
+2. Rule Evaluation
+   - Uses 9 IF-THEN rules.
+   - Rule strength uses AND = min(mu_density, mu_waiting).
+
+3. Aggregation
+   - Clips each output set by rule strength.
+   - Aggregates using pointwise max over fired-rule outputs.
 
 4. Defuzzification
-   - Step-by-step clipping, aggregation, and COG breakdown
+   - Uses centroid (center of gravity) over the aggregated output.
+   - Numerically sampled over output domain.
 
-5. Scenarios
-   - Preset traffic situations (rush hour, late night, etc.)
-   - One-click loading into the live controller
+## Membership Variables and Ranges
 
-## Libraries Used
+- Traffic Density: 0 to 60
+  - Low (trapezoidal), Medium (triangular), High (trapezoidal)
 
-- streamlit
-  - Web app UI and interaction
+- Waiting Time: 0 to 90
+  - Short (trapezoidal), Medium (triangular), Long (trapezoidal)
 
-- numpy
-  - Numerical operations and defuzzification sampling
+- Green Duration: 0 to 60
+  - Short (triangular), Medium (triangular), Long (triangular), Very Long (trapezoidal)
 
-- pandas
-  - Rule table display and lightweight tabular handling
+## Requirement Modules
 
-- matplotlib
-  - Membership plots, rule activation charts, and traffic-light drawing
+### External packages (from `requirements.txt`)
 
-- warnings (standard library)
-  - Suppresses warning noise for cleaner app output
+- streamlit>=1.32
+- numpy>=1.24
+- pandas>=2.0
+- matplotlib>=3.7
 
-## Setup and Run
+### Python standard-library module used in code
 
-### 1) Create and activate a virtual environment (recommended)
+- warnings
 
-Python 3.10+ is recommended.
+Note: `matplotlib` submodules like `matplotlib.pyplot`, `matplotlib.colors`, and `matplotlib.patches` are included with the main `matplotlib` package.
 
-Windows PowerShell:
+## Setup
+
+Python 3.10+ recommended.
+
+### 1) Create and activate virtual environment (PowerShell)
 
 ```powershell
 python -m venv .venv
@@ -137,15 +86,13 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-This installs all dependencies used by the project.
-
-### 3) Run the main app
+### 3) Run the app
 
 ```powershell
 streamlit run .\fuzzy-traffic-controller.py
 ```
 
-If streamlit is not on PATH, run:
+If `streamlit` is not on PATH:
 
 ```powershell
 python -m streamlit run .\fuzzy-traffic-controller.py
@@ -153,30 +100,25 @@ python -m streamlit run .\fuzzy-traffic-controller.py
 
 ### 4) Open in browser
 
-Streamlit will print a local URL such as:
+Streamlit typically serves at:
 
 http://localhost:8501
 
-## Current Project Structure
+## Project Files
 
-```text
-AI-Project/
-├── fuzzy-traffic-controller.py
-├── README.md
-├── requirements.txt
-└── .gitignore
-```
+- `fuzzy-traffic-controller.py`: Main application and fuzzy controller logic
+- `requirements.txt`: Dependency list
+- `README.md`: Project documentation
 
 ## Troubleshooting
 
-- Error: "streamlit is not recognized"
-  - Use python -m streamlit run .\fuzzy-traffic-controller.py
-  - Or ensure the virtual environment is activated before running
+- Command not found for Streamlit:
+  - Use `python -m streamlit run .\fuzzy-traffic-controller.py`
+  - Confirm virtual environment is activated
 
-- Session state issues
-  - This app uses Streamlit session state to synchronize sliders and scenario presets
-  - Restart the app if state appears stale after code edits
+- Import errors:
+  - Re-run `pip install -r requirements.txt` in the active environment
+  - Verify VS Code interpreter selection points to your environment
 
-- Missing package import errors
-  - Install dependencies in the active environment
-  - Verify interpreter selection in VS Code
+- Session state feels stale after code edits:
+  - Refresh the app page or restart Streamlit
