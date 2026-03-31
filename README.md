@@ -54,20 +54,6 @@ The Streamlit app in `fuzzy-traffic-controller.py` currently has 6 tabs:
 - Green Duration: 0 to 60
   - Short (triangular), Medium (triangular), Long (triangular), Very Long (trapezoidal)
 
-## Requirement Modules
-
-### External packages (from `requirements.txt`)
-
-- streamlit>=1.32
-- numpy>=1.24
-- pandas>=2.0
-- matplotlib>=3.7
-
-### Python standard-library module used in code
-
-- warnings
-
-Note: `matplotlib` submodules like `matplotlib.pyplot`, `matplotlib.colors`, and `matplotlib.patches` are included with the main `matplotlib` package.
 
 ## Setup
 
